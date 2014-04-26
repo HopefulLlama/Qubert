@@ -1,0 +1,296 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> -->
+
+<html>
+<head>
+	<title>Qubert</title>
+	<meta name="Author" content="Jonathan Law" />
+	<meta name="Keywords" content="Jonathan Law, University of Greenwich"/>
+	<meta name="Description" content="Qubert" />
+    <link href="./bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="./bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
+    <link href="./qunit-1.14.0.css" rel="stylesheet" type="text/css"/>
+    <link href="./stylesheet.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css"></style> 
+    <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="raphael-2.1.2.js"></script>
+    <script type="text/javascript" src="math.min.js"></script>
+    <script type="text/javascript" src="qunit-1.14.0.js"></script>
+    
+    <script type="text/javascript" src="json-handler.js"></script>
+    <script type="text/javascript" src="painter.js"></script>
+    <script type="text/javascript" src="gate.js"></script>    
+    <script type="text/javascript" src="tool.js"></script>    
+    <script type="text/javascript" src="toolbox.js"></script>    
+    <script type="text/javascript" src="step.js"></script>
+    <script type="text/javascript" src="qubit.js"></script>
+    <script type="text/javascript" src="circuit.js"></script>
+    <script type="text/javascript" src="matrix-expert.js"></script>
+    <script type="text/javascript" src="evaluator.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="controller.js"></script>
+    <script type="text/javascript" src="unit-tests.js"></script>    
+    <script type="text/javascript" src="unit-test-runner.js"></script>    
+</head>
+<body>
+    <!-- Modals adapted from http://getbootstrap.com/javascript/ Accessed: 11/04/2014 -->
+    <!-- Save Modal -->
+    <div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="saveModalLabel">Save Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Below is the text repsentation of your circuit. Copy and store this somewhere safe. You will be asked to enter this text string when you wish to load your circuit later.</p>
+                    <div class="input-group">
+                        <span class="input-group-addon">Circuit:</span>
+                        <input id="saveTextbox" type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Okay, got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load Modal -->
+    <div class="modal fade" id="loadModal" tabindex="-1" role="dialog" aria-labelledby="loadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="loadModalLabel">Load Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>In the textbox below, you may enter a text string obtained from a previously saved circuit. This will load the circuit into the workspace for you to construct upon, or evaluate.</p>
+                    <div class="input-group">
+                        <span class="input-group-addon">Text String:</span>
+                        <input id="loadTextbox" type="text" class="form-control" placeholder="[&quot;00&quot;]" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Never mind!</button>
+                    <button id="loadButton" type="button" class="btn btn-primary">Load my baby!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="uploadModalLabel">Upload Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Join the Qubert community by uploading your circuit online! This will allow everyone to search for, download and construct upon your built circuit. All you need to do is select a name and submit it to our servers.</p>
+                    <p>Note, once you upload it you will not be able to perform any modifications, so double check that it's exactly as you want it before uploading.</p>
+                    <div class="input-group">
+                        <span class="input-group-addon">Circuit Name:</span>
+                        <input id="uploadTextbox" type="text" class="form-control" placeholder="Grovers Algorithm" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Never mind!</button>
+                    <button id="uploadButton" type="button" class="btn btn-primary">Upload my baby!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Download Modal -->
+    <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="downloadModalLabel">Download Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>As part of the Qubert community you have access to a community pool of circuit set ups. Select from a list of circuits below, download it and wait for Qubert to construct your circuit for you!</p>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <button id="refreshModalButton" type="button" class="btn btn-default pull-right">
+                                <span class="glyphicon glyphicon-refresh"></span> Refresh
+                            </button>
+                            <h4 class="panel-title">Circuit Listing</h4>
+                            <br class="clear" />
+                        </div>
+                        <div class="panel-body">
+                            <div id="circuit-list">
+                            
+                            </div>
+                            <div id="circuit-pagination" class="text-center">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Never mind!</button>
+                    <button id="downloadButton" type="button" class="btn btn-primary">Download this baby!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Evaluate Modal -->
+    <div class="modal fade" id="evaluateModal" tabindex="-1" role="dialog" aria-labelledby="evaluateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="evaluateModalLabel">Warning: Evaluate Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Evaluating ten or more qubits have proven to be unstable on most machines. Proceeding may cause significant reduction in performance and possible critical failure of the web browser.</p>
+                    <p>Continue?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">No, get me out of here!</button>
+                    <button id="evaluateModalButton" type="button" class="btn btn-success">Yes, evaluate this baby!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reset Modal -->
+    <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="resetModalLabel">Warning: Reset Circuit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Proceeding with this reset action will cause you to lose all unsaved work. Please ensure all work desired has been saved.</p>
+                    <p>Continue?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">No, wait!</button>
+                    <button id="resetButton" type="button" class="btn btn-success">Yes, reset this baby!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header  bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="aboutModalLabel">About Qubert</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">How to use Qubert</h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>Qubert is a quantum computer simulator, allowing you to construct logic gates and evaluate their outcome. The toolbox allows you to select your logic gate, and place them onto the circuit. Pressing the evaluate button in the menu controls will allow you to simulate the outcome of your constructed circuit.</p>
+                        <p>Also available to you are controls to modify the properties of your circuit,  as well as options on saving and loading circuits from various sources.</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">External Libraries</h4>
+                        </div>
+                        <div class="panel-body">
+                            <p><b><a href="http://raphaeljs.com/">Rapha&euml;l</a></b> - Aids with the drawing and management SVG element.</p>
+                            <p><b><a href="http://mathjs.org/">Math.js</a></b> - Used for matrix multiplication in the evaluation of circuit.</p>
+                            <p><b><a href="https://qunitjs.com/">QUnit</a></b> - Powerful unit testing framework.</p>
+                            <p><b><a href="http://jquery.com/">jQuery</a></b> - Feature rich library to each the usage of JavaScript.</p>
+                            <p><b><a href="http://getbootstrap.com/">Bootstrap</a></b> - Framework to develop responsive web pages.</p>
+                            <p><b><a href="http://glyphicons.com/">GLYPHICONS</a></b> - Library of monochromatic icons and symbols.</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Okay, thanks Jon!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actual page -->
+    <div>
+        <div class="btn-group">
+            <button id="evaluateMenuButton" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-play"></span> Evaluate
+            </button>
+            <div class="btn-group">
+                <button id="circuit-properties" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    Circuit
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><span class="pull-left">Qubits:</span><span class="pull-right"><input type="button" value="-" id="decrementQubit"> <input type="textbox" value="2" id="qubitTextbox" /> <input type="button" value="+" id="incrementQubit"></span></li>
+	                <li><span class="pull-left">Steps:</span><span class="pull-right"><input type="button" value="-" id="decrementStep"> <input type="textbox" value="10" id="stepTextbox" /> <input type="button" value="+" id="incrementStep"></span></li>
+	                <li><a id="resetButton" href="#" data-toggle="modal" data-target="#resetModal">
+	                    <span class="glyphicon glyphicon-repeat"></span>
+	                    Reset
+	                    </a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-hdd"></span>
+                    Local
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a id="save" href="#" data-toggle="modal" data-target="#saveModal">
+                            <span class="glyphicon glyphicon-save"></span>
+                            Save
+                        </a></li>
+                    <li><a id="load" href="#" data-toggle="modal" data-target="#loadModal">
+                            <span class="glyphicon glyphicon-open"></span>
+                            Load
+                        </a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-transfer"></span>
+                    Online
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a id="upload" href="#" data-toggle="modal" data-target="#uploadModal">
+                            <span class="glyphicon glyphicon-upload"></span>
+                            Upload
+                        </a></li>
+                    <li><a id="download" href="#" data-toggle="modal" data-target="#downloadModal">
+                            <span class="glyphicon glyphicon-download"></span>
+                            Download
+                        </a></li>
+                </ul>
+            </div>
+            <button id="aboutButton" type="button" class="btn btn-default" data-toggle="modal" data-target="#aboutModal">
+                <span class="glyphicon glyphicon-info-sign"></span> About
+            </button>
+    	</div>
+		
+    </div>
+    <div id="toolboxDiv">
+    </div>
+    <div id="help">
+    </div>
+    <div>
+        <div id="circuitry">
+        </div>
+        <div id="evaluation">
+        </div>
+    </div>
+</body>
+
+</html>

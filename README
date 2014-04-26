@@ -1,0 +1,8 @@
+Qubert
+
+Qubert is an in-browser quantum circuit simulator, which allows you to construct quantum circuits using a graphical interface, and then simulate the circuit returning the outcomes from the circuit.
+
+You may persist these changes locally or online, for future use.
+
+Powered using JavaScript libraries such as Raphael.js, Maths.js, jQuery and to an extent, Bootstrap. 
+Backend supported by PHP and MongoDb.
